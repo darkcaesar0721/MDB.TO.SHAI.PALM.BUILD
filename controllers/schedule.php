@@ -232,6 +232,9 @@ class Schedule
 
         $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
 
+        $path->shai_previous_path = ($download_type === 'all' || $download_type === 'shai') ? $path->shai_path . "\\" . $path->folder_name : $path->shai_previous_path;
+        $path->palm_previous_path = ($download_type === 'all' || $download_type === 'palm') ? $path->palm_path . "\\" . $path->folder_name : $path->palm_previous_path;
+
         if ($time === '8AM') {
             $path->download_time = '2PM';
             $path->folder_name = $sp[0] . ' 2PM';

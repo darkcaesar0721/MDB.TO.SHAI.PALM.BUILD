@@ -116,12 +116,12 @@ class Mail
     {
         $this->email_setting->shai1->open = true;
 
-        if ($this->path->csv_previous_path === '') {
-            echo json_encode(array('status' => 'error', 'text' => 'csv previous path is invalid.'));
+        if ($this->path->shai_previous_path === '') {
+            echo json_encode(array('status' => 'error', 'text' => 'shai previous path is invalid.'));
             exit;
         }
         
-        $folder_path = $this->path->csv_previous_path;
+        $folder_path = $this->path->shai_previous_path;
         $sp = explode('\\', $folder_path);
         $folder_name = $sp[count($sp) - 1];
         $file_name = '00_ALL_' . $folder_name . '_CA Window Door.csv';
@@ -142,12 +142,12 @@ class Mail
         $this->email_setting->shai2->open = true;
         $this->email_setting->shai2->files = [];
         
-        if ($this->path->csv_previous_path === '') {
-            echo json_encode(array('status' => 'error', 'text' => 'csv previous path is invalid.'));
+        if ($this->path->shai_previous_path === '') {
+            echo json_encode(array('status' => 'error', 'text' => 'shai previous path is invalid.'));
             exit;
         }
 
-        $folder_path = $this->path->csv_previous_path;
+        $folder_path = $this->path->shai_previous_path;
         $sp = explode('\\', $folder_path);
         $folder_name = $sp[count($sp) - 1];
 
@@ -418,11 +418,11 @@ class Mail
     {
         $this->email_setting->palm1->open = true;
 
-        // if ($this->path->xls_previous_path === '') {
-        //     echo json_encode(array('status' => 'error', 'text' => 'xls previous path is invalid.'));
-        //     exit;
-        // }
-        $folder_path = "C:\\mdb_work\\Palm\\11262023 8AM";
+        if ($this->path->palm_previous_path === '') {
+            echo json_encode(array('status' => 'error', 'text' => 'xls previous path is invalid.'));
+            exit;
+        }
+        $folder_path = $this->path->palm_previous_path;
         $sp = explode('\\', $folder_path);
         $folder_name = $sp[count($sp) - 1];
         $file_name = $folder_name . '_PALM.xls';
