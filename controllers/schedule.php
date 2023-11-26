@@ -12,7 +12,7 @@ use Google_Client;
 use Google_Service_Sheets;
 use Google_Service_Sheets_ValueRange;
 
-class schedule
+class Schedule
 {
     public function init()
     {
@@ -32,8 +32,11 @@ class schedule
         $date = substr($sp[0], 0, 2) . '/' . substr($sp[0], 2, 2) . '/' . substr($sp[0], 4, 4);
         $date_info = getDate(strtotime($date));
 
-        $a_csv = ($download_type === 'all' || $download_type === 'csv') ? $_REQUEST['data']['csv'] : [];
-        $a_xls = ($download_type === 'all' || $download_type === 'xls') ? $_REQUEST['data']['xls'] : [];
+        $main_file = 'db/main.json';
+        $mains = json_decode(file_get_contents($main_file), true);
+
+        $shais = ($download_type === 'all' || $download_type === 'shai') ? $mains['shais'] : [];
+        $palms = ($download_type === 'all' || $download_type === 'palm') ? $mains['palms'] : [];
 
         $client = new \Google_Client();
         $client->setApplicationName('Google Sheets and PHP');
@@ -74,21 +77,32 @@ class schedule
                     $cur_schedule = $v;
                 }
 
-                foreach($a_csv as $k => $csv) {
-                    if ($csv['schedule'] == $r) {
-                        $a_csv[$k]['schedule_index'] = $j;
+                foreach($shais as $k => $shai) {
+                    if ($shai['schedule'] == $r) {
+                        $shais[$k]['schedule_index'] = $j;
                     }
                 }
 
-                foreach($a_xls as $k => $xls) {
-                    if ($xls['schedule'] == $r) {
-                        $a_xls[$k]['schedule_index'] = $j;
+                foreach($palms as $k => $palm) {
+                    if ($palm['schedule'] == $r) {
+                        $palms[$k]['schedule_index'] = $j;
                     }
                 }
             }
         }
 
-        $rows = array_merge($a_csv, $a_xls);
+        $rows = [];
+        foreach ($shais as $shai) {
+            if ($shai['isUploadCount'] == 'true' || $shai['isUploadCount'] == true) {
+                $rows[] = $shai;   
+            }
+        }
+
+        foreach ($palms as $palm) {
+            if ($palm['isUploadCount'] == 'true' || $shai['isUploadCount'] == true) {
+                $rows[] = $palm;   
+            }
+        }
 
         if ($date_info['wday'] == 4) {
             $name = $date_info['weekday'] . ' ' . $time;
@@ -125,28 +139,28 @@ class schedule
                         if ($cur_schedule_index !== -1) {
                             if ($cur_schedule[$i]) {
                                 if (strpos($cur_schedule[$i], '+') !== false) {
-                                    $row[] = $cur_schedule[$i] . '+' . $c['count'];
+                                    $row[] = $cur_schedule[$i] . '+' . $c['schedule_count'];
                                 } else {
                                     if ($cur_schedule[$i] == ' ' || $cur_schedule[$i] == '') {
-                                        $row[] = $c['count'];
+                                        $row[] = $c['schedule_count'];
                                     } else {
                                         $exp = explode(" ", $cur_schedule[$i]);
                                         if (count($exp) > 2) {
-                                            $row[] = $cur_schedule[$i] . ' ' . $c['count'];
+                                            $row[] = $cur_schedule[$i] . ' ' . $c['schedule_count'];
                                         } else {
                                             if ((int)$exp[0] < 13) {
-                                                $row[] = $cur_schedule[$i] . '+' . $c['count'];
+                                                $row[] = $cur_schedule[$i] . '+' . $c['schedule_count'];
                                             } else {
-                                                $row[] = $cur_schedule[$i] . ' ' . $c['count'];
+                                                $row[] = $cur_schedule[$i] . ' ' . $c['schedule_count'];
                                             }
                                         }
                                     }
                                 }
                             } else {
-                                $row[] = $c['count'];
+                                $row[] = $c['schedule_count'];
                             }
                         } else {
-                            $row[] = $c['count'];
+                            $row[] = $c['schedule_count'];
                         }
                         $ext = true;
                     }
@@ -167,29 +181,29 @@ class schedule
                         if ($cur_schedule_index !== -1) {
                             if ($cur_schedule[$i]) {
                                 if (strpos($cur_schedule[$i], '+') !== false) {
-                                    $row[] = $cur_schedule[$i] . '+' . $c['count'];
+                                    $row[] = $cur_schedule[$i] . '+' . $c['schedule_count'];
                                 } else {
                                     if ($cur_schedule[$i] == ' ' || $cur_schedule[$i] == '') {
-                                        $row[] = $c['count'];
+                                        $row[] = $c['schedule_count'];
                                     } else {
                                         $exp = explode(" ", $cur_schedule[$i]);
                                         if (count($exp) > 2) {
-                                            $row[] = $cur_schedule[$i] . ' ' . $c['count'];
+                                            $row[] = $cur_schedule[$i] . ' ' . $c['schedule_count'];
                                         } else {
                                             if ((int)$exp[0] < 13) {
-                                                $row[] = $cur_schedule[$i] . '+' . $c['count'];
+                                                $row[] = $cur_schedule[$i] . '+' . $c['schedule_count'];
                                             } else {
-                                                $row[] = $cur_schedule[$i] . ' ' . $c['count'];
+                                                $row[] = $cur_schedule[$i] . ' ' . $c['schedule_count'];
                                             }
                                         }
                                     }
                                 }
                             } else {
-                                $row[] = $c['count'];
+                                $row[] = $c['schedule_count'];
                             }
 
                         } else {
-                            $row[] = $c['count'];
+                            $row[] = $c['schedule_count'];
                         }
                         $ext = true;
                     }
@@ -217,9 +231,6 @@ class schedule
         }
 
         $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
-
-        $path->csv_previous_path = ($download_type === 'all' || $download_type === 'csv') ? $path->csv_path . "\\" . $path->folder_name : $path->csv_previous_path;
-        $path->xls_previous_path = ($download_type === 'all' || $download_type === 'xls') ? $path->xls_path . "\\" . $path->folder_name : $path->xls_previous_path;
 
         if ($time === '8AM') {
             $path->download_time = '2PM';
