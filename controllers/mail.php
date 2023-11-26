@@ -418,11 +418,11 @@ class Mail
     {
         $this->email_setting->palm1->open = true;
 
-        if ($this->path->xls_previous_path === '') {
-            echo json_encode(array('status' => 'error', 'text' => 'xls previous path is invalid.'));
-            exit;
-        }
-        $folder_path = $this->path->xls_previous_path;
+        // if ($this->path->xls_previous_path === '') {
+        //     echo json_encode(array('status' => 'error', 'text' => 'xls previous path is invalid.'));
+        //     exit;
+        // }
+        $folder_path = "C:\\mdb_work\\Palm\\11262023 8AM";
         $sp = explode('\\', $folder_path);
         $folder_name = $sp[count($sp) - 1];
         $file_name = $folder_name . '_PALM.xls';
