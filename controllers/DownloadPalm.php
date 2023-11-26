@@ -36,7 +36,10 @@ try {
     $sth->execute();
 
     $palm_rows = [];
-    $palm_rows[] = ['Date', 'Phone', 'Name', 'Address', 'City', 'State', 'Zip', 'Job Group', 'County'];
+
+    if ($palm['isDownload'] != 'true') {
+        $palm_rows[] = ['Date', 'Phone', 'Name', 'Address', 'City', 'State', 'Zip', 'Job Group', 'County'];
+    }
 
     $palm_last_phone = '';
 
@@ -75,7 +78,7 @@ try {
             foreach($dupPalm['rows'] as $row) {
                 $rows[] = $row;
             }
-            if (count($dupPalm['rows']) !== 0) $rows[] = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+            // if (count($dupPalm['rows']) !== 0) $rows[] = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
         }
 
         foreach($palm_rows as $row) {
